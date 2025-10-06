@@ -1,8 +1,18 @@
-#include <concepts>
+#import <concepts>
 #import <format>
 #import <source_location>
 #import <iostream>
 
+
+enum class log_level : std::uint8_t{
+    trace,
+    debug,
+    info,
+    critical,
+    warning,
+    error,
+    fatal,
+};
 
 
 template<typename T>
@@ -19,10 +29,15 @@ public:
     [[nodiscard]] constexpr std::source_location const &location() const {return loc;}
 };
 
+constinit static log_level max_level;
+
 template<typename... Args>
-void log_info(with_source_location<std::format_string<Args...>> fmt, Args &&...args){
-    auto const &loc = fmt.location();
-    std::cout << loc.file_name() << ":" << loc.line() << " [Info] " << std::vformat(fmt.format().get(), std::make_format_args(args...)) << '\n';
+void generic_log(log_level lev,with_source_location<std::format_string<Args...>> fmt, Args &&...args){
+    if (lev >= max_level) {
+        auto const &loc = fmt.location();
+        std::cout << loc.file_name() << ":" << loc.line() << " [Info] " 
+            << std::vformat(fmt.format().get(), std::make_format_args(args...)) << '\n';
+    }
 }
 
 int main(){
