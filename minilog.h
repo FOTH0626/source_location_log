@@ -49,13 +49,20 @@ public:
     constexpr std::source_location const &location() const {return loc;}
 };
 
+
+constinit inline log_level g_max_level = log_level::debug;
+
+
 }
 
-constinit inline log_level max_level = log_level::debug;
+inline void set_log_level(log_level lev){
+    details::g_max_level = lev;
+}
+
 
 template<typename... Args>
 void generic_log(log_level lev,details::with_source_location<std::format_string<Args...>> fmt, Args &&...args){
-    if (lev >= max_level) {
+    if (lev >= details::g_max_level) {
         auto const &loc = fmt.location();
         std::cout << loc.file_name() << ":" << loc.line() << " [" << details::log_level_name(lev) << "] " 
             << std::vformat(fmt.format().get(), std::make_format_args(args...)) << '\n';
