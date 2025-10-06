@@ -59,9 +59,8 @@ public:
 
 
 inline log_level g_max_level = []() -> log_level{
-    auto name = std::getenv("MINILOG_LEVEL");
-    if (name) {
-        return details::log_level_from_name(name);
+    if (auto lev = std::getenv("MINILOG_LEVEL")) {
+        return details::log_level_from_name(lev);
     }
     return log_level::info;
 }();
