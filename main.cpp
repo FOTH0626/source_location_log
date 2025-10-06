@@ -11,6 +11,6 @@ int main(){
 
     const auto pi = 3.1415926535;
     MINILOG_P(pi);
-
+    minilog::log_fatal("fuck {}", "gg");
     return 0;
 }
