@@ -34,6 +34,14 @@ inline std::string log_level_name(log_level lev){
     return "unkonwn";
 }
 
+inline log_level log_level_from_name(std::string lev){
+#define _FUNCTION(name) if(lev == #name) return log_level::name;
+    MINILOG_FOREACH_LOG_LEVEL(_FUNCTION)
+#undef _FUNCTION
+    return log_level::info;
+
+}
+
 
 template<typename T>
 struct with_source_location{
@@ -50,7 +58,13 @@ public:
 };
 
 
-constinit inline log_level g_max_level = log_level::debug;
+inline log_level g_max_level = []() -> log_level{
+    auto name = std::getenv("MINILOG_LEVEL");
+    if (name) {
+        return details::log_level_from_name(name);
+    }
+    return log_level::info;
+}();
 
 
 }
