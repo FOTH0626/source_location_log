@@ -22,6 +22,9 @@ enum class log_level : std::uint8_t {
 #undef _FUNCTION
 };
 
+namespace details {
+
+
 inline std::string log_level_name(log_level lev){
     switch(lev){
 #define _FUNCTION(name) case log_level::name: return #name;
@@ -46,21 +49,25 @@ public:
     constexpr std::source_location const &location() const {return loc;}
 };
 
+}
+
 constinit inline log_level max_level = log_level::debug;
 
 template<typename... Args>
-void generic_log(log_level lev,with_source_location<std::format_string<Args...>> fmt, Args &&...args){
+void generic_log(log_level lev,details::with_source_location<std::format_string<Args...>> fmt, Args &&...args){
     if (lev >= max_level) {
         auto const &loc = fmt.location();
-        std::cout << loc.file_name() << ":" << loc.line() << " [" << log_level_name(lev) << "] " 
+        std::cout << loc.file_name() << ":" << loc.line() << " [" << details::log_level_name(lev) << "] " 
             << std::vformat(fmt.format().get(), std::make_format_args(args...)) << '\n';
     }
 }
 
 
+
+
 #define _FUNCTION(name) \
 template<typename... Args>\
-void log_##name(with_source_location<std::format_string<Args...>> fmt, Args &&...args){\
+void log_##name(details::with_source_location<std::format_string<Args...>> fmt, Args &&...args){\
     return generic_log(log_level::name, std::move(fmt), std::forward<Args>(args)...);\
 }
 MINILOG_FOREACH_LOG_LEVEL(_FUNCTION)
