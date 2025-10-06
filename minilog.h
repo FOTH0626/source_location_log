@@ -133,7 +133,7 @@ void generic_log(log_level lev,details::with_source_location<std::format_string<
         //     << std::vformat(fmt.format().get(), std::make_format_args(args...)) 
         //     MINILOG_IF_HAS_ANSI_COLORS(   << "\E[m"  )
         //     << '\n';
-        auto msg = std::vformat(fmt.get(), std::make_format_args(args...));
+        auto msg = std::vformat(fmt.format().get(), std::make_format_args(args...));
         details::output_log(lev, std::move(msg), loc);
     }
 }
